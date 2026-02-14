@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts'
-import { AlertTriangle, MapIcon, Route, FileText, Activity, Shield, Search, X, Plus, Bell, MapPin, Clock, Navigation, TrendingUp, CheckCircle, AlertCircle, Eye } from 'lucide-react'
+import { AlertTriangle, MapIcon, Route, FileText, Activity, Shield, Search, X, Plus, Bell, MapPin, Clock, Navigation, TrendingUp, CheckCircle, AlertCircle, Eye, Menu } from 'lucide-react'
 import { useApp } from '../contexts/AppContext'
 import api from '../services/api'
 
@@ -48,6 +48,7 @@ export default function MainDashboard() {
   const [reportLocation, setReportLocation] = useState(null)
   const [riskPrediction, setRiskPrediction] = useState(null)
   const [selectedHotspot, setSelectedHotspot] = useState(null)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [accidentImages, setAccidentImages] = useState({})
 
   // Risk Prediction Handler
@@ -90,16 +91,40 @@ export default function MainDashboard() {
     activeTab: activeTab
   })
   return (
-    <div className="flex h-screen bg-gray-900 overflow-hidden">
-     
-      <Sidebar 
-        activeTab={activeTab} 
-        setActiveTab={setActiveTab} 
-        wsConnected={wsConnected} 
-      />
+    <div className="flex h-screen bg-gray-900 overflow-hidden relative">
+      {/* Mobile Hamburger Button */}
+      <button
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        className="md:hidden fixed top-4 left-4 z-50 bg-gray-800 border border-gray-700 rounded-lg p-2 hover:bg-gray-700 transition"
+        title="Toggle Menu"
+      >
+        <Menu size={24} className="text-white" />
+      </button>
+
+      {/* Sidebar Overlay for Mobile */}
+      {sidebarOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black/50 z-30 transition-opacity"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div
+        className={`fixed md:static top-0 left-0 h-screen z-40 transform transition-transform duration-300 ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+        }`}
+      >
+        <Sidebar 
+          activeTab={activeTab} 
+          setActiveTab={setActiveTab} 
+          wsConnected={wsConnected}
+          onItemClick={() => setSidebarOpen(false)}
+        />
+      </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden w-full">
         {/* Top Navbar */}
         <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
 
